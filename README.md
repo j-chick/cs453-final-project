@@ -22,6 +22,7 @@
 ### data/
 
 * **(bones|cow).smf**: Sample 3D objects, courtesy of [He Zhao](https://hezhao.net/projects/progressive-meshes/), for initial testing.
+* TODO Ply files @ [https://people.sc.fsu.edu/~jburkardt/data/ply/ply.html]
 
 ### src/
 
