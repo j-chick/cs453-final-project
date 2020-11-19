@@ -30,15 +30,12 @@ pip install -r requirements.txt
 
 ### assets/
 
-* **cmu/citation-2417323.bib**: BibTEX citation for original paper downloaded from [ResearchGate](https://www.researchgate.net/publication/2417323_Surface_Simplification_Using_Quadric_Error_Metrics/citation/download).
-* **cmu/quadrics.pdf**: Original CMU paper, for convenience.
-* **osu/example_paper.zip**: Example LaTex project, for reference.
-* **osu/termproject_proposal.pdf**: Instructions for final project proposal.
+* **citation-2417323.bib**: BibTEX citation for original paper downloaded from [ResearchGate](https://www.researchgate.net/publication/2417323_Surface_Simplification_Using_Quadric_Error_Metrics/citation/download).
+* **quadrics.pdf**: Original CMU paper, for convenience.
 
-### data/
+### models/
 
-* **(bones|cow).smf**: Sample 3D objects, courtesy of [He Zhao](https://hezhao.net/projects/progressive-meshes/), for initial testing.
-* TODO Ply files @ [https://people.sc.fsu.edu/~jburkardt/data/ply/ply.html]
+* **panther.(ply|stl)**: Sample 3D methes to serve as intermediate test data.
 
 ### src/
 
