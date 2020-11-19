@@ -10,6 +10,22 @@
 
 [Citation](./assets/citation-2417323.bib)
 
+## Setup
+
+### conda
+
+``` bash
+conda create --file requirements.txt --name viz python=3.9 -y
+conda activate viz
+```
+
+### pip
+
+``` bash
+pip install -r requirements.txt
+# NOTE try pip3 if that doesn't work on Mac OS Catalina or later.
+```
+
 ## This repository
 
 ### assets/
