@@ -22,8 +22,8 @@ conda activate viz
 ### pip
 
 ``` bash
-pip install -r requirements.txt
 # NOTE try pip3 if that doesn't work on Mac OS Catalina or later.
+pip install -r requirements.txt
 ```
 
 ## This repository
@@ -35,8 +35,18 @@ pip install -r requirements.txt
 
 ### models/
 
-* **panther.(ply|stl)**: Sample 3D methes to serve as intermediate test data.
+* ***.ply**: Sample 3D methes to serve as intermediate test data.
 
 ### src/
 
-* TODO
+* **garland_heckbert.py**: Main file for the alorithm implementation.
+
+## Visualize Models
+
+``` bash
+vedo path/to/file.ply
+```
+
+## Resources
+
+* Tips for writing mesh code in Python can be found [here](https://github.com/mikedh/trimesh/blob/master/trimesh/exchange/README.md).
