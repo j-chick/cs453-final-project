@@ -35,16 +35,16 @@ pip install -r requirements.txt
 
 ### models/
 
-* ***.ply**: Sample 3D methes to serve as intermediate test data.
+* **cow.obj**: Original 3D cow model from the original paper.
 
 ### src/
 
 * **garland_heckbert.py**: Main file for the alorithm implementation.
 
-## Visualize Models
+## Visualize Model
 
 ``` bash
-vedo path/to/file.ply
+python scripts/viz_cow.py
 ```
 
 ## Resources
