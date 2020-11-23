@@ -1,4 +1,29 @@
-numpy==1.19.4
-plotly==4.12.0
-plyfile==0.7.2
-vedo==2020.4.1
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: osx-64
+ca-certificates=2020.11.8=h033912b_0
+certifi=2020.11.8=py39h6e9494a_0
+libblas=3.9.0=3_openblas
+libcblas=3.9.0=3_openblas
+libcxx=11.0.0=h439d374_0
+libffi=3.2.1=hb1e8313_1007
+libgfortran=5.0.0=h7cc5361_13
+libgfortran5=9.3.0=h7cc5361_13
+liblapack=3.9.0=3_openblas
+libopenblas=0.3.12=openmp_h54245bb_1
+llvm-openmp=11.0.0=h73239a0_1
+ncurses=6.2=h2e338ed_4
+numpy=1.19.4=py39hd3e5478_1
+openssl=1.1.1h=haf1e3a3_0
+pip=20.2.4=py_0
+python=3.9.0=ha017127_4_cpython
+python_abi=3.9=1_cp39
+readline=8.0=h0678c8f_2
+setuptools=49.6.0=py39h2c36a5b_2
+sqlite=3.33.0=h960bd1c_1
+tk=8.6.10=hb0a8c7a_1
+trimesh=3.8.14=pyhd3deb0d_0
+tzdata=2020d=h516909a_0
+wheel=0.35.1=pyh9f0ad1d_0
+xz=5.2.5=haf1e3a3_1
+zlib=1.2.11=h7795811_1010
