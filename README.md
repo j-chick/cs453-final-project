@@ -26,6 +26,15 @@ conda activate viz
 pip install -r requirements.txt
 ```
 
+## Running the Algorithm
+
+``` bash
+python src/main.py \
+    --simple-pair-selection \
+    --n-contractions 1 \
+    models/icosahedron.ply
+```
+
 ## This repository
 
 ### assets/
