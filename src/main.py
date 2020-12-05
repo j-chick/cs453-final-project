@@ -17,7 +17,7 @@ def main(args: argparse.Namespace) -> None:
 
     print(len(vertices), len(faces), args.n_contractions)
     assert n_vertices + args.n_contractions == len(vertices) # REVIEW
-    # assert n_faces - 2 * args.n_contractions == len(faces) # REVIEW
+    #assert n_faces - 2 * args.n_contractions == len(faces) # REVIEW
     
     PlyFile.save(vertices, faces, 'temp.ply')
 

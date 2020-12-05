@@ -18,11 +18,17 @@ class PlyFile:
         with open(path, 'r') as ply:
             for line in ply.readlines()[1:]:
                 if re.match(r'^3 [0-9]+ [0-9]+ [0-9]+', line):
-                    assert len(line.split(' ')) == 4
-                    faces += [tuple(map(int, line.split(' ')[1:]))]
+                    #assert len(line.split(' ')) == 4
+                    to_add_to_faces = line.split(' ')
+                    to_add_to_faces.pop() #Get rid of the trailing \n
+                    to_add_to_faces.pop(0) #Get rid of the leading 3
+                    faces += [tuple(map(int, to_add_to_faces))]
                 elif re.match(r'^-?[0-9.]+ -?[0-9.]+ -?[0-9.]+', line):
-                    assert len(line.split(' ')) == 3, line
-                    vertices += [np.array(list(map(float, line.split(' '))))]
+                    #assert len(line.split(' ')) == 3, line
+                    to_add_to_vertices = line.split(' ')
+                    to_add_to_vertices.pop()
+                    vertices += [np.array(list(map(float, to_add_to_vertices)))]
+                    #vertices += [np.array(list(map(float, line.split(' '))))]
 
         # FIXME
         # assert len(vertices) == 12
