@@ -1,25 +1,28 @@
 import argparse
-import random
 import sys
 
-from algorithm import jostle_vertices, garland_heckbert
-from util.ply import PlyFile
+from algorithm import garland_heckbert
+from util import load_from_plyfile, jostle_vertices, save_to_plyfile
 
 def main(args: argparse.Namespace) -> None:
-    vertices, faces = PlyFile.load(args.obj_path)
-    # vertices = jostle_vertices(vertices) # NOTE
+    n_vertices: int
+    n_faces: int
 
-    n_vertices: int = len(vertices)
-    n_faces: int = len(faces)
-    print(n_vertices, n_faces, 0)
+    vertices, faces = load_from_plyfile(args.input_path)
+    if args.jostle_vertices:
+        vertices = jostle_vertices(vertices) # NOTE
+
+    n_vertices = len(vertices)
+    n_faces = len(faces)
+    # print(n_vertices, n_faces, 0)
 
     vertices, faces = garland_heckbert(vertices, faces, total_contractions=args.n_contractions)
 
-    print(len(vertices), len(faces), args.n_contractions)
-    assert n_vertices + args.n_contractions == len(vertices) # REVIEW
-    # assert n_faces - 2 * args.n_contractions == len(faces) # REVIEW
+    # print(len(vertices), len(faces), args.n_contractions)
+    assert n_vertices + args.n_contractions == len(vertices)
+    assert n_faces - 2 * args.n_contractions == len(faces)
     
-    PlyFile.save(vertices, faces, 'temp.ply')
+    save_to_plyfile(args.output_path, vertices, faces)
 
 if __name__ == '__main__':
 
@@ -27,10 +30,12 @@ if __name__ == '__main__':
     clargs: argparse.Namespace
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('obj_path', default='models/cow.obj')
-    parser.add_argument('--simple-pair-selection', action='store_true')
-    parser.add_argument('--use-midpoint', action='store_true')
+    parser.add_argument('--input-path', default='models/icosahedron.ply')
+    parser.add_argument('--output-path', default='temp/output.ply')
     parser.add_argument('--n-contractions', type=int, default=1)
+    parser.add_argument('--jostle-vertices', action='store_true')
+    parser.add_argument('--simple-pair-selection', default=False, action='store_true')
+    parser.add_argument('--use-midpoint', default=False, action='store_true')
 
     clargs = parser.parse_args(sys.argv[1:])
     main(clargs)

@@ -1,3 +1,5 @@
 .vscode/
-scripts/raw.githubusercontent.com/
+models/cow.obj
+models/panther.stl
+src/__pycache__/
 temp/

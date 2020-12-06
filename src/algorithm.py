@@ -1,42 +1,26 @@
-import heapq
+'''
+TODO
+'''
+# TODO import heapq
 import numpy as np
+from util import assert_correctness, NULL_VERTEX
 
-dead_vertices: set = set()
+def select_valid_contraction_pairs(faces: list, t: float = None) -> list:
+    edges: set = set()
+    non_adjacent: set
 
-def jostle_vertices(v: list) -> list:
-    v_jostled: list = []
-
-    assert all(v_i.shape == (3,) for v_i in v)
-
-    for v_i in v:
-        v_jostled += [np.array(
-            [component + np.random.choice([-0.01, 0.01]) for component in v_i]
-        )]
-
-    return v_jostled
-
-def select_valid_contraction_pairs2(faces: list) -> list:
-    pairs: list = []
-    idx: int = 0
-
-    for i, j, k in faces:
-        pairs += [(i, j), (i, k), (j, k)]
-    while idx < len(pairs):
-        i, j = pairs[idx]
-
-        idx += 1
-
-def select_valid_contraction_pairs(faces: list) -> list:
-    pairs: set
-
-    pairs = set()
     for face in faces:
         [i, j, k] = sorted(face)
-        pairs.update({(i, j), (i, k), (j, k)})
+        edges.update({(i, j), (j, k), (i, k)})
+    if t is None:
+        non_adjacent = []
+    else:
+        raise NotImplementedError
 
-    assert not any((j, i) in pairs for (i, j) in pairs)
+    assert not any((j, i) in edges for (i, j) in edges)
+    assert not any((j, i) in non_adjacent for (i, j) in non_adjacent)
     
-    return list(pairs)
+    return list(edges)
 
 def planes(vertices: list, faces: list, v_index: int) -> set:
     a: float
@@ -122,56 +106,57 @@ def perform_contraction(v: list, faces: list, pair: tuple, v_replacement: np.nda
     assert isinstance(j, int) and 0 <= j < len(v), str(j)
     assert isinstance(v_replacement, np.ndarray) and v_replacement.shape == (3,), str(v_replacement)
 
-    n_vertices = len(v)
-    # _ = int(v[i][0]), int(v[j][0]) # FIXME
-    # v[i] = np.empty((3,)) NOTE
-    # v[j] = np.empty((3,)) NOTE
+    assert v[i] is not NULL_VERTEX, str(pair)
+    assert v[j] is not NULL_VERTEX, str(pair)
+    v[i] = NULL_VERTEX
+    v[j] = NULL_VERTEX
     v.append(v_replacement)
-    n_faces = len(faces)
-    for i_faces in range(n_faces):
-        idx_1, idx_2, idx_3 = faces[i_faces]
-        faces[i_faces] = (
-            len(v) - 1 if idx_1 in {i, j} else idx_1,
-            len(v) - 1 if idx_2 in {i, j} else idx_2,
-            len(v) - 1 if idx_3 in {i, j} else idx_3
-        )
-    faces = [(a, b, c) for a, b, c in faces if a != b and b != c and c != a]
+    # n_faces = len(faces)
+    for i_faces in range(len(faces)):
+        for i_face in range(3):
+            if faces[i_faces][i_face] in {i, j}:
+                assert faces[i_faces][i_face] != len(v) - 1
+                faces[i_faces][i_face] = len(v) - 1
+    faces = [face for face in faces if len(set(face)) == 3]
 
-    assert len(v) - n_vertices == 1
     # assert len(faces) - n_faces == -2
     assert all(len(face) == 3 for face in faces)
     assert not any(i in face or j in face for face in faces)
+    # assert len(v) == len(np.unique(faces))
     
     return v, faces
 
-
-
 def update_contraction_costs(heap: list, v: list, faces: list) -> list:
-    contracted_pair = heap.pop(0)
-    i: int = contracted_pair[0]
-    j: int = contracted_pair[1]
+    idx: int = 0
 
-    assert not any(i in face or j in face for face in faces)
     assert not any(len(v) - 1 in pair for _, pair, _ in heap)
 
-    for idx in range(len(heap)):
-        _, pair, _ = heap[idx]
-        if i in pair or j in pair:
-            (idx_1, idx_2) = pair
-            if idx_1 == i or idx_1 == j:
-                idx_1 = len(v) - 1
-            elif idx_2 == i or idx_2 == j:
-                idx_2 = len(v) - 1
-            else:
-                raise ValueError
-            assert idx_1 != idx_2
-            q_i = compute_quadric_matrix(v, faces, idx_1)
-            q_j = compute_quadric_matrix(v, faces, idx_2)
-            vbar = compute_replacement_vertex(v[idx_1], v[idx_2], q_i, q_j)
+    while idx < len(heap):
+        _, (i, j), _ = heap[idx]
+        assert i != j
+        if v[i] is NULL_VERTEX or v[j] is NULL_VERTEX:
+            if v[i] is NULL_VERTEX:
+                i = len(v) - 1
+            if v[j] is NULL_VERTEX:
+                j = len(v) - 1
+            if i == j:
+                _ = heap.pop(idx)
+                continue
+            q_i = compute_quadric_matrix(v, faces, i)
+            q_j = compute_quadric_matrix(v, faces, j)
+            vbar = compute_replacement_vertex(v[i], v[j], q_i, q_j)
             cost = compute_contraction_cost(vbar, q_i, q_j)
-            heap[idx] = (cost, (idx_1, idx_2), vbar)
+            heap[idx] = (cost, (i, j), vbar)
+        idx += 1
+    heap = sorted(heap, key=lambda v: v[0], reverse=True)
+    # assert isinstance(heap, list) and all(isinstance(cost, float) and isinstance(pair, tuple) and isinstance(vbar, np.ndarray) for cost, pair, vbar in heap)
+    # heapq.heapify(heap)
+    
 
-    assert not any(i in pair or j in pair for _, pair, _ in heap)
+    # assert all(all(v[index] is not NULL_VERTEX for index in pair) for _, pair, _ in heap)
+    for n, (_, pair, _) in enumerate(heap):
+        for i in pair:
+            assert v[i] is not NULL_VERTEX, f'{n}, {i}'
 
     return heap
 
@@ -181,7 +166,7 @@ def garland_heckbert(v: list, faces: list, total_contractions: int = 1, use_midp
 
     assert all(v_i.shape == (3,) for v_i in v)
     assert all(all(isinstance(component, float) for component in v_i) for v_i in v)
-    assert all(isinstance(face, tuple) for face in faces)
+    assert all(isinstance(face, list) for face in faces)
     assert all(all(isinstance(idx, int) for idx in face) for face in faces), str(type(faces[0][0]))
     assert all(all(0 <= idx < len(v) for idx in face) for face in faces)
 
@@ -193,30 +178,23 @@ def garland_heckbert(v: list, faces: list, total_contractions: int = 1, use_midp
         q_j = compute_quadric_matrix(v, faces, j)
         vbar = compute_replacement_vertex(v[i], v[j], q_i, q_j)
         cost = compute_contraction_cost(vbar, q_i, q_j)
+        assert isinstance(cost, float)
         queue.append((cost, (i, j), vbar))
 
-    # heapq.heapify(queue) NOTE
-    queue = sorted(queue, key=lambda v: v[0])
+    queue = sorted(queue, key=lambda v: v[0], reverse=True)
+    # heapq.heapify(queue)
 
-    # while len(faces) > 100:
     for n in range(total_contractions):
-        # _, pair, vbar = heapq.heappop(queue) NOTE
-        _, pair, vbar = queue[0]
-        # if pair[0] in dead_vertices or pair[1] in dead_vertices:
-        #     continue
-        print(f'Contracting {pair}')
+        _, pair, vbar = queue.pop()
+        # _, pair, vbar = heapq.heappop(queue)
+        print(n, f'Contracting {pair}', len(np.unique(faces)))
         v, faces = perform_contraction(v, faces, pair, vbar)
-        # dead_vertices.update(set(pair)) # FIXME
         queue = update_contraction_costs(queue, v, faces)
-        
-        # heapq.heapify(queue) NOTE
-        queue = sorted(queue, key=lambda v: v[0])
-
-        # print(f' {n}', end='\r')
+        assert_correctness(v, faces)
 
     assert all(v_i.shape == (3,) for v_i in v)
     assert all(all(isinstance(component, float) for component in v_i) for v_i in v)
-    assert all(isinstance(face, tuple) for face in faces)
+    assert all(isinstance(face, list) for face in faces)
     assert all(all(isinstance(idx, int) for idx in face) for face in faces), str(type(faces[0][0]))
     assert all(all(0 <= idx < len(v) for idx in face) for face in faces)
 
