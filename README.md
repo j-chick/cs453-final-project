@@ -12,32 +12,52 @@
 
 ## Setup
 
+If you have some way to view ply files that you'd rather use than Vedo, then the only dependecy that must be installed in NumPy. We tested this on Mac OS (Catalina & Big Sur) code with python 3.9.0 and NumPy 1.19.4 through Anaconda.
+
+Assuming you do want Vedo, use the following installation instructions:
+
 ### conda
+
+For ideal results, use this:
+
+``` bash
+# NOTE It might take a while for conda to figure out the dependency structure...ß
+conda install -c conda-forge vtk=8.1.2 vedo
+```
+
+...and if that doesn't work, just do this:
+
+``` bash
+consta install -c conda-forge vedo
+```
+
+<!-- REVIEW 
 
 ``` bash
 conda create --file requirements.txt --name viz python=3.9 -y
 conda activate viz
-```
+``` -->
 
 ### pip
 
-``` bash
+TODO
+<!-- REVIEW ``` bash
 # NOTE try pip3 if that doesn't work on Mac OS Catalina or later.
 pip install -r requirements.txt
-```
+``` -->
 
 ## Running the Algorithm
 
 ``` bash
-python src/main.py \
-    --simple-pair-selection \
-    --n-contractions 1 \
-    models/icosahedron.ply
+$ python src/main.py \
+    --input-path models/panther.ply \
+    --n-contractions 200 \
+    --simple-pair-selection
 ```
 
 ## This repository
 
-### assets/
+<!-- TODO ### assets/
 
 * **citation-2417323.bib**: BibTEX citation for original paper downloaded from [ResearchGate](https://www.researchgate.net/publication/2417323_Surface_Simplification_Using_Quadric_Error_Metrics/citation/download).
 * **quadrics.pdf**: Original CMU paper, for convenience.
@@ -48,7 +68,7 @@ python src/main.py \
 
 ### src/
 
-* **garland_heckbert.py**: Main file for the alorithm implementation.
+* **garland_heckbert.py**: Main file for the alorithm implementation. -->
 
 ## Visualize Model
 
