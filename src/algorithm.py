@@ -5,6 +5,8 @@ TODO
 import numpy as np
 from util import assert_correctness, NULL_VERTEX
 
+quadric_matrices: dict = {}
+
 def select_valid_contraction_pairs(faces: list, t: float = None) -> list:
     edges: set = set()
     non_adjacent: set
@@ -64,7 +66,7 @@ def compute_quadric_matrix(vertices: list, faces: list, v_index: int) -> np.ndar
 def compute_replacement_vertex(v_1: np.ndarray, v_2: np.ndarray, q_1: np.ndarray, q_2: np.ndarray) -> np.ndarray:
     qbar: np.ndarray
 
-    # assert TODO
+    # TODO assert
 
     qbar = q_1 + q_2
     try:
@@ -126,7 +128,7 @@ def perform_contraction(v: list, faces: list, pair: tuple, v_replacement: np.nda
     
     return v, faces
 
-def update_contraction_costs(heap: list, v: list, faces: list) -> list:
+def update_contraction_queue(heap: list, v: list, faces: list) -> list:
     idx: int = 0
 
     assert not any(len(v) - 1 in pair for _, pair, _ in heap)
@@ -152,20 +154,20 @@ def update_contraction_costs(heap: list, v: list, faces: list) -> list:
     # assert isinstance(heap, list) and all(isinstance(cost, float) and isinstance(pair, tuple) and isinstance(vbar, np.ndarray) for cost, pair, vbar in heap)
     # heapq.heapify(heap)
     
-
-    # assert all(all(v[index] is not NULL_VERTEX for index in pair) for _, pair, _ in heap)
-    for n, (_, pair, _) in enumerate(heap):
-        for i in pair:
-            assert v[i] is not NULL_VERTEX, f'{n}, {i}'
+    assert all(all(v[index] is not NULL_VERTEX for index in pair) for _, pair, _ in heap)
 
     return heap
+
+def plot_costs(v: list, faces: list, costs: list) -> None:
+    raise NotImplementedError
 
 def garland_heckbert(v: list, faces: list, total_contractions: int = 1, use_midpoint: bool = False) -> tuple:
     queue: list = []
     valid_contraction_pairs: list
+    # contraction_costs: list = []
 
     assert all(v_i.shape == (3,) for v_i in v)
-    assert all(all(isinstance(component, float) for component in v_i) for v_i in v)
+    assert all(all(isinstance(c, float) for c in v_i) for v_i in v)
     assert all(isinstance(face, list) for face in faces)
     assert all(all(isinstance(idx, int) for idx in face) for face in faces), str(type(faces[0][0]))
     assert all(all(0 <= idx < len(v) for idx in face) for face in faces)
@@ -176,7 +178,10 @@ def garland_heckbert(v: list, faces: list, total_contractions: int = 1, use_midp
     for i, j in valid_contraction_pairs:
         q_i = compute_quadric_matrix(v, faces, i)
         q_j = compute_quadric_matrix(v, faces, j)
-        vbar = compute_replacement_vertex(v[i], v[j], q_i, q_j)
+        if use_midpoint:
+            vbar = (v[i] + v[j]) / 2
+        else:
+            vbar = compute_replacement_vertex(v[i], v[j], q_i, q_j)
         cost = compute_contraction_cost(vbar, q_i, q_j)
         assert isinstance(cost, float)
         queue.append((cost, (i, j), vbar))
@@ -184,18 +189,20 @@ def garland_heckbert(v: list, faces: list, total_contractions: int = 1, use_midp
     queue = sorted(queue, key=lambda v: v[0], reverse=True)
     # heapq.heapify(queue)
 
-    for n in range(total_contractions):
-        _, pair, vbar = queue.pop()
+    for _ in range(total_contractions):
+        cost, pair, vbar = queue.pop()
         # _, pair, vbar = heapq.heappop(queue)
-        print(n, f'Contracting {pair}', len(np.unique(faces)))
         v, faces = perform_contraction(v, faces, pair, vbar)
-        queue = update_contraction_costs(queue, v, faces)
+        queue = update_contraction_queue(queue, v, faces)
         assert_correctness(v, faces)
+        # contraction_costs.append(cost)
 
     assert all(v_i.shape == (3,) for v_i in v)
-    assert all(all(isinstance(component, float) for component in v_i) for v_i in v)
+    assert all(all(isinstance(c, float) for c in v_i) for v_i in v)
     assert all(isinstance(face, list) for face in faces)
     assert all(all(isinstance(idx, int) for idx in face) for face in faces), str(type(faces[0][0]))
     assert all(all(0 <= idx < len(v) for idx in face) for face in faces)
 
-    return v, faces
+    return v, faces # , contraction_costs
+
+# def approximate_error(m_n: dict, m_i: dict)

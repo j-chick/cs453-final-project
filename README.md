@@ -1,5 +1,13 @@
 # CS453 Final Project
 
+## Demo
+
+```
+# NOTE Assumes this being run from project root, and that Numpy is installed.
+bash scripts/demo.sh
+open demo.ply
+```
+
 ## Paper
 
 [_Surface Simplification Using Quadric Error Metrics_](https://www.cs.cmu.edu/~./garland/Papers/quadrics.pdf)
@@ -40,8 +48,13 @@ conda activate viz
 
 ### pip
 
-TODO
-<!-- REVIEW ``` bash
+``` bash
+pip(3) install vedo
+```
+
+<!-- REVIEW 
+
+``` bash
 # NOTE try pip3 if that doesn't work on Mac OS Catalina or later.
 pip install -r requirements.txt
 ``` -->
